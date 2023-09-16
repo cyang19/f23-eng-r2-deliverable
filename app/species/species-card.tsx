@@ -32,7 +32,7 @@ export default function SpeciesCard(species: Species) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="secondary" onClick={() => setOpen(true)}>
-            <Icons.add className="mt-3 h-8 w-8" />
+            <Icons.add className="mt-1 h-5 w-5" />
             Learn More
           </Button>
         </DialogTrigger>
@@ -48,7 +48,7 @@ export default function SpeciesCard(species: Species) {
                 <b className="font-semibold"> Scientific Name:</b> {species.scientific_name}
               </h4>
               <p className="text-lg font-light ">
-                <b className="font-semibold"> Total Population: </b> {species.total_population}{" "}
+                <b className="font-semibold"> Total Population: </b> {species.total_population ?? "N/A"}
                 {/* how to check if this is null*/}
               </p>
               <p className="text-lg font-light ">
@@ -59,6 +59,14 @@ export default function SpeciesCard(species: Species) {
               </p>{" "}
             </DialogDescription>
           </DialogHeader>
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="secondary" onClick={() => setOpen(false)}>
+                Edit Species Information
+              </Button>
+            </DialogTrigger>
+          </Dialog>
         </DialogContent>
       </Dialog>
     </div>
