@@ -126,7 +126,7 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
                   <FormItem>
                     <FormLabel>Scientific Name</FormLabel>
                     <FormControl>
-                      <Input readOnly placeholder="Cavia porcellus" {...field} />
+                      <Input placeholder="Cavia porcellus" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
