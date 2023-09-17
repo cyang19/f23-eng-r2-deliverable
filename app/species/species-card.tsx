@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import { type Database } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Session } from "@supabase/auth-helpers-nextjs";
@@ -15,7 +17,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 type Species = Database["public"]["Tables"]["species"]["Row"];
-type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 const kingdoms = z.enum(["Animalia", "Plantae", "Fungi", "Protista", "Archaea", "Bacteria"]);
 
@@ -58,6 +59,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(true);
   const [submit, setSubmit] = useState<boolean>(false);
+  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(speciesSchema),
@@ -68,7 +70,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
   const onSubmit = async (input: FormData) => {
     // The `input` prop contains data that has already been processed by zod. We can now use it in a supabase query
     const supabase = createClientComponentClient<Database>();
-    const { error } = await supabase
+    await supabase
       .from("species")
       .update({
         common_name: input.common_name,
@@ -93,6 +95,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
       <h4 className="text-lg font-light italic">{species.scientific_name}</h4>
       <p>{species.description ? species.description.slice(0, 150).trim() + "..." : ""}</p>
       {/* Replace with detailed view */}
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="secondary" onClick={() => setOpen(true)}>
@@ -131,7 +134,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                       <FormItem>
                         <FormLabel>Common Name</FormLabel>
                         <FormControl>
-                          <Input value={value ?? ""} readOnly={edit} placeholder={species.common_name} {...rest} />
+                          <Input value={value ?? ""} readOnly={edit} placeholder={species?.common_name} {...rest} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -148,7 +151,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                       <FormItem>
                         <FormLabel>Kingdom</FormLabel>
                         <FormControl>
-                          <Input value={value ?? ""} readOnly={edit} placeholder={species.kingdom} {...rest} />
+                          <Input value={value ?? ""} readOnly={edit} placeholder={species?.kingdom} {...rest} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -185,7 +188,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                       <FormItem>
                         <FormLabel>Image URL</FormLabel>
                         <FormControl>
-                          <Input value={value ?? ""} readOnly={edit} placeholder={species.image} {...rest} />
+                          <Input value={value ?? ""} readOnly={edit} placeholder={species?.image} {...rest} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -202,7 +205,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Input value={value ?? ""} readOnly={edit} placeholder={species.description} {...rest} />
+                          <Textarea value={value ?? ""} readOnly={edit} placeholder={species?.description} {...rest} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -213,7 +216,13 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                   <Button
                     className="ml-1 mr-1 flex-auto"
                     onClick={() =>
-                      session.user.id == species.author ? (setEdit(false), setSubmit(true)) : setEdit(true)
+                      session?.user.id == species.author
+                        ? (setEdit(false), setSubmit(true), setOpen(false))
+                        : (setEdit(true),
+                          toast({
+                            title: "Permission Denied",
+                            description: "Only authors may edit this card.",
+                          }))
                     }
                   >
                     {submit ? "Submit" : "Edit Information"}
@@ -222,7 +231,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                     type="button"
                     className="ml-1 mr-1 flex-auto"
                     variant="secondary"
-                    onClick={() => setOpen(false)}
+                    onClick={() => (setOpen(false), setEdit(true), setSubmit(false))}
                   >
                     Cancel
                   </Button>
