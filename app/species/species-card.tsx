@@ -134,7 +134,12 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                       <FormItem>
                         <FormLabel>Common Name</FormLabel>
                         <FormControl>
-                          <Input value={value ?? ""} readOnly={edit} placeholder={species?.common_name} {...rest} />
+                          <Input
+                            value={value ?? ""}
+                            readOnly={edit}
+                            placeholder={species.common_name ?? ""}
+                            {...rest}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -188,7 +193,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                       <FormItem>
                         <FormLabel>Image URL</FormLabel>
                         <FormControl>
-                          <Input value={value ?? ""} readOnly={edit} placeholder={species?.image} {...rest} />
+                          <Input value={value ?? ""} readOnly={edit} placeholder={species.image ?? ""} {...rest} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -205,7 +210,12 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea value={value ?? ""} readOnly={edit} placeholder={species?.description} {...rest} />
+                          <Textarea
+                            value={value ?? ""}
+                            readOnly={edit}
+                            placeholder={species.description ?? ""}
+                            {...rest}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -217,7 +227,7 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
                     className="ml-1 mr-1 flex-auto"
                     onClick={() =>
                       session?.user.id == species.author
-                        ? (setEdit(false), setSubmit(true), setOpen(false))
+                        ? (setEdit(false), setSubmit(true))
                         : (setEdit(true),
                           toast({
                             title: "Permission Denied",
