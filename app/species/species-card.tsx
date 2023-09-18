@@ -81,6 +81,11 @@ export default function SpeciesCard({ species, session }: SpeciesCardProps) {
         image: input.image,
       })
       .eq("id", species.id);
+
+    toast({
+      title: "Edit Successful",
+      description: "You may now exit this page.",
+    });
   };
 
   return (
